@@ -13,6 +13,7 @@ async function run() {
       core.info(`No commits found in the payload, skipping check.`)
     } else {
       await commitMessageChecker.checkCommitMessages(checkerArguments)
+      core.setOutput('message','abcccccccccccccc')
     }
   } catch (error) {
     // Fail the workflow run if an error occurs
