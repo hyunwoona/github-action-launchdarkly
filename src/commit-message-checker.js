@@ -35,7 +35,7 @@ export async function checkCommitMessages(args) {
 		if (message.startsWith('[Feature Flag]')) {
       core.info(`- OK: "${message}"`)
 
-			return 'abcd'
+			core.setOutput('abcd')
     } else {
       core.info(`- failed: "${message}"`)
       result = false
