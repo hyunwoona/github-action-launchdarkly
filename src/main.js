@@ -7,6 +7,7 @@ import * as commitMessageChecker from './commit-message-checker'
  * @returns {Promise<void>} Resolves when the action is complete.
  */
 async function run() {
+      core.setOutput('message','abccccccccdccccc')
   try {
     const checkerArguments = await inputHelper.getInputs()
     if (checkerArguments.messages.length === 0) {
