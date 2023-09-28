@@ -83,9 +83,7 @@ export async function getInputs() {
  *
  * @returns   string[]
  */
-async function getMessages(
-  pullRequestOptions
-) {
+async function getMessages(pullRequestOptions) {
   core.debug('Get messages...')
   core.debug(
     ` - pullRequestOptions: ${JSON.stringify(pullRequestOptions, null, 2)}`
@@ -171,7 +169,7 @@ async function getMessages(
         )
 
         for (message of commitMessages) {
-          if (message) {
+          if (message?.message) {
             messages.push(message)
           }
         }
@@ -179,27 +177,27 @@ async function getMessages(
 
       break
     }
-    case 'push': {
-      if (!github.context.payload) {
-        throw new Error('No payload found in the context.')
-      }
+    // case 'push': {
+    //   if (!github.context.payload) {
+    //     throw new Error('No payload found in the context.')
+    //   }
 
-      if (
-        !github.context.payload.commits ||
-        !github.context.payload.commits.length
-      ) {
-        core.debug(' - skipping commits')
-        break
-      }
+    //   if (
+    //     !github.context.payload.commits ||
+    //     !github.context.payload.commits.length
+    //   ) {
+    //     core.debug(' - skipping commits')
+    //     break
+    //   }
 
-      for (const i in github.context.payload.commits) {
-        if (github.context.payload.commits[i].message) {
-          messages.push(github.context.payload.commits[i].message)
-        }
-      }
+    //   for (const i in github.context.payload.commits) {
+    //     if (github.context.payload.commits[i].message) {
+    //       messages.push(github.context.payload.commits[i].message)
+    //     }
+    //   }
 
-      break
-    }
+    //   break
+    // }
     default: {
       throw new Error(`Event "${github.context.eventName}" is not supported.`)
     }
@@ -234,6 +232,10 @@ async function getCommitMessagesFromPullRequest(
             node {
               commit {
                 message
+								tree {
+									url
+									sha
+								}
               }
             }
           }
@@ -255,7 +257,7 @@ async function getCommitMessagesFromPullRequest(
   core.debug(` - query: ${query}`)
   core.debug(` - variables: ${JSON.stringify(variables, null, 2)}`)
 
-  const response = await graphql<RepositoryResponseData>(query, variables)
+  const response = await graphql(query, variables)
   const repository = response.repository
 
   core.debug(` - response: ${JSON.stringify(repository, null, 2)}`)
@@ -264,7 +266,11 @@ async function getCommitMessagesFromPullRequest(
 
   if (repository.pullRequest) {
     messages = repository.pullRequest.commits.edges.map(function (edge) {
-      return edge.node.commit.message
+      return {
+				message: edge.node.commit.message,
+				url: edge.node.commit.tree.url,
+				sha: edge.node.commit.tree.sha,
+			};
     })
   }
 

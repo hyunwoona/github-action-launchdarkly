@@ -31,8 +31,9 @@ export async function checkCommitMessages(args) {
   let result = true
 
   for (const message of args.messages) {
+		core.info(`Hi ${message}`);
     // if (checkMessage(message, args.pattern, args.flags)) {
-		if (message.startsWith('[Feature Flag]')) {
+		if (message.message.startsWith('[Feature Flag]')) {
       core.info(`- OK: "${message}"`)
 
 			core.setOutput('abcd')
